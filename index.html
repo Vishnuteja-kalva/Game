@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Typing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: URL("https://i.pinimg.com/originals/08/d9/ef/08d9ef7723de602edefa8af825d9a1e2.gif");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .input_s {
+            background-image: URL("https://i.pinimg.com/originals/0a/6b/63/0a6b6325bacfac76a1998f1fc277e9a7.gif");
+            padding: 50px;
+            border-radius: 15px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        .input_s h3 {
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input_s label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input {
+            width: 80%;
+            height: 40px;
+            margin: 15px 0;
+            padding-left: 10px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #ff4e50;
+            background-color: #fff;
+        }
+
+        button {
+            width: 60%;
+            height: 45px;
+            border: none;
+            border-radius: 25px;
+            background-color: blue;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: black;
+            color: #fff;
+        }
+
+        #error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .game-container {
+            text-align: center;
+            background-image: URL("https://static.vecteezy.com/system/resources/thumbnails/002/884/043/small_2x/abstract-red-and-black-futuristic-gaming-background-in-livestream-free-vector.jpg");
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 300px;
+            color: white;
+            display: none;
+        }
+
+        .score-time {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            text-decoration: solid;
+        }
+
+        .character-display {
+            font-size: 50px;
+            margin: 20px 0;
+        }
+
+        #input-char {
+            padding: 10px;
+            font-size: 20px;
+            width: 30%;
+            text-align: center;
+            border-radius: 40px;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="input_s" id="player-details">
+        <h3>Enter Player Details</h3>
+        <label for="ip">Player Name</label><br><br>
+        <input type="text" id="ip" placeholder="Enter player name" required><br>
+        
+        <label for="p_age">Player's Age</label><br><br>
+        <input type="number" id="p_age" placeholder="Enter player's age" required><br>
+        
+        <button type="button" onclick="startGame()">Start Game</button>
+        <div id="error-message">Please fill in all the fields correctly.</div>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <h1 id="pname"></h1>
+        <div class="score-time">
+            <div>Score: <span id="score">0</span></div>
+            <div>Time Left: <span id="time">300</span> seconds</div>
+        </div>
+        <div id="character-display" class="character-display">A</div>
+        <br><br>
+        <input type="text" id="input-char" autofocus placeholder="Type the character here" maxlength="1">
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function startGame() {
+            const playerName = document.getElementById('ip').value;
+            const playerAge = document.getElementById('p_age').value;
+            const errorMessage = document.getElementById('error-message');
+            if (playerName === '' || playerAge === '' || playerAge <= 0) {
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+                alert(`Welcome, ${playerName}! Age: ${playerAge}\nThe game will start now.`);
+                document.getElementById('player-details').style.display = 'none';
+                document.getElementById('game-container').style.display = 'block';
+                startTypingGame();
+            }
+        }
+
+        function startTypingGame() {
+            let score = 0;
+            let timeLeft = 300; 
+            let interval;
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const scoreDisplay = document.getElementById('score');
+            const timeDisplay = document.getElementById('time');
+            const charDisplay = document.getElementById('character-display');
+            const inputField = document.getElementById('input-char');
+            const message = document.getElementById('message');
+
+            function randomCharacter() {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                return characters[randomIndex];
+            }
+
+            function updateCharacter() {
+                charDisplay.textContent = randomCharacter();
+            }
+
+            function updateTime() {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    timeDisplay.textContent = timeLeft;
+                } else {
+                    endGame();
+                }
+            }
+
+            function endGame() {
+                clearInterval(interval);
+                inputField.disabled = true;
+                message.textContent = `Game Over! Your final score is ${score}`;
+            }
+
+            inputField.addEventListener('input', function () {
+                const typedChar = inputField.value.toUpperCase();
+                if (typedChar === charDisplay.textContent) {
+                    score++;
+                    message.textContent = 'Correct!';
+                } else {
+                    score--;
+                    message.textContent = 'Wrong!';
+                }
+                scoreDisplay.textContent = score;
+                inputField.value = ''; 
+                updateCharacter(); 
+            });
+
+            updateCharacter();
+            interval = setInterval(updateTime, 1000);
+        }
+    </script>
+    
+</body>
+</html>
